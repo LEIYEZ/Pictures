@@ -1,0 +1,216 @@
+Spring：
+     Spring是分层的JavaSE/EE应用full-stack(全栈)轻量级开源框架，
+     以IOC(控制反转)和AOP(面向切面编程)为内核，提供了展现
+     层SpringMVC 和 持久层SpringJDBC以及业务层事务管理等众
+     多的企业级应用技术，还能整合开源世界众多著名的第三方
+     框架和类库，逐渐成为使用最多的JavaEE企业应用开源框架。
+     
+Spring优势：
+    1.方便解耦，简化开发
+    2.AOP编程的知识
+    3.声明式事务的支持
+    4.方便测试
+    5.方便集成各种框架
+    6.降低JavaEE API的使用难度
+    7.Java源码是经典学习范例
+    
+=============================================================================================================================
+耦合：程序间的依赖关系：类，方法
+解耦：降低程序间的依赖关系
+实际开发中应该做到编译时不依赖，运行时再依赖
+解耦的思路：
+          1.使用反射来创建对象，而避免使用new 关键字。
+          2.通过读取配置文件来获取要创建的对象全限定类名。
+          
+eg：
+    public class JdbcDemo01 {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+        //1.注册驱动
+//        DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+        Class.forName("com.mysql.jdbc.Driver"); //弊端：字符串写死
+        //2.获取链接
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/zl?useSSL=true","root","1870535196");
+        //3.获取操作数据库的预处理对象
+        PreparedStatement pstm = conn.prepareStatement("select * from account");
+        //4.执行SQL，得到结果集
+        ResultSet rs = pstm.executeQuery();
+        //5.便利结果集
+        while(rs.next()){
+            System.out.println(rs.getString("name"));
+        }
+        //6.释放资源
+        rs.close();
+        pstm.close();
+        conn.close();
+    }
+}
+
+
+=========================================================================================================
+IOC：控制反转，解决·程序间的依赖关系
+
+ * ApplicationContext的三个实现类：
+ *      ClassPathXmlApplicationContext      ：   它可以加载路径下的配置文件，要求配置文件必须在类路径下。否则，无法加载。
+ *      FileSystemXmlApplicationContext     ：   它可以加载磁盘任意路径下的配置文件(必修有访问权限)。
+ *      AnnotationConfigApplicationContext  ：   它是用于读取注解创建容器的。
+ *
+ * 核心容器的两个接口引发出的问题：
+ *      ApplicationContext：         单例对象适用              采用此接口
+ *          它在构建核心容器时，创建对象采用的策略是采用立即加载的方式。也就是说，只要一读取完配置文件马上就创建配置文件中配置的对象。
+ *      BeanFactory：                多例对象适用
+ *          它在构建核心容器时，创建对象采取的策略是延迟加载的方式。也就是说什么时候根据id获取对象，什么时候才真正创建对象。
+ =======================================================================================================================
+ bean：
+	<!-- 把对象的创建交给spring来创建-->
+    <!-- id： 获取标识   class：反射获取的全限定类名-->
+    
+    <!-- spring对bean的管理细节
+            1.创建bean的三种方式：
+            2.bean对象的作用范围
+            3.bean对象的生命周期
+    -->
+    <!-- 创建bean的三种方式-->
+    <!-- 1.默认构造函数创建
+            在spring配置文件中，使用bean标签配以id和class属性之后，且没有其他属性和标签时。
+            采用的就是默认构造函数创建bean对象，此时如果类中没有默认构造函数，则对象无法创建。
+    -->
+<!--    <bean id="accountService" class="cn.imut.service.impl.AccountServiceImpl"/>-->
+    <!-- 2.使用普通工程中的方法创建对象(使用某个类中的方法创建对象，并存入spring容器)-->
+<!--    <bean id="instanceFactory" class="cn.imut.factory.InstanceFactory"/>-->
+<!--    <bean id="accountService" factory-bean="instanceFactory" factory-method="getAccountService"/>-->
+    <!-- 3.使用静态方法创建对象，并存入spring容器-->
+    
+        <!-- bean的作用范围调整
+        bean标签的scope属性：
+            作用：用于指定bean作用范围
+            取值：
+                singleton：单例(默认)
+                prototype：多例
+                request：作用于web应用的请求范围
+                session：作用于web应用的会话范围
+                global-session：作用于集群环境的会话范围(全局会话)
+    -->
+
+    <!-- bean的生命周期
+            1.单例对象
+                出生：当容器创建时，对象出生  init-method
+                活着：容器存在，对象就活着
+                死亡：容器销毁，对象死亡     destroy-method
+                总结：单例对象的生命周期和容器相同
+            2.多例对象
+                出生：使用对象时spring框架为我们创建
+                活着：对象使用中
+                死亡：当对象长时间不用时，且没有别的对象引用时，由java的垃圾回收器回收
+    -->
+    
+    
+  
+  
+  
+  
+  
+  <!-- spring中的依赖注入
+        依赖注入：
+            Dependency Injection
+        IOC的作用：
+            降低程序间的依赖关系
+        依赖关系的管理：
+            交给spring管理
+        在当前类需要用到其他类的对象，由spring为我们提供，我们只需要在配置文件中说明
+        依赖关系的维护：
+            称之为依赖注入。
+        依赖注入：
+            能注入的数据：有三类
+                基本类型和String
+                其他bean类型(在配置文件中或者注解配置过的bean)
+                复杂类型/集合类型
+            注入的方式：
+                1.使用构造函数提供
+                2.使用set方法提供
+                3.使用注解提供
+    -->
+
+    <!-- 构造函数注入：
+            使用的标签：constructor-arg
+            标签出现的位置：bean标签的内部
+            标签的属性：
+                type：用于指定要注入的数据的数据类型，该数据类型也是构造函数中某个或某些参数的类型
+                index：用于指定要注入的数据给构造函数中指定索引位置的参数赋值。索引的位置是从0开始
+                name：用于指定给构造函数中指定名称的参数赋值
+                ==============以上三个用于指定给构造函数中哪个参数赋值==========================================
+                value：用于提供基本类型和String类型的数据
+                ref：用于指定其他的bean类型数据。它指的是spring的ioc核心容器过的bean对象
+             优势：在获取bean对象时注入数据是必须的操作，否则对象无法创建成功。
+             弊端：改变了bean对象的实例化方法，是我们在创建对象时，如果用不到这些数据，也必须提供。
+    -->  
+    
+    
+    <!-- set方法注入                            更常用
+            涉及的标签：property
+            出现的位置：bean标签的内部
+            标签的属性：
+                name：用于指定注入时set方法的名称
+                value：用于提供基本类型和String类型的数据
+                ref：用于指定其他的bean类型数据。它指的是spring的ioc核心容器过的bean对象
+            优势：创建对象没有明确的限制，可以直接使用默认构造函数
+            弊端：如果某个成员必须有值，则获取对象是有可能set方法没有执行。
+    -->
+    
+    
+    <!-- 集合类型的注入
+            用于给List结构集合注入的标签：
+                list array set
+            用于Map结构集合注入的标签：
+                map props
+            结构相同，标签可以互换
+    -->
+    
+    
+    </bean>
+ *  用于创建对象的注解
+ *      <bean>实现功能
+ *      注解：Component
+ *              作用：用于把当前类对象存入spring容器中
+ *              属性：
+ *                  value：用于指定bean的id。不写时，默认值为当前类名，首字母改小写
+ *           Controller：表现层
+ *           Service：业务层
+ *           Repository：持久层
+ *           这三个注解作用和属性与Component一样
+ *           他们三个是spring框架为我们提供明确的三层使用的注解，是我们三层对象更清晰
+ *  用于注入数据的注解
+ *      <property>
+ *      注解：Autowired：
+ *              作用：自动按照类型注入。只要容器中有唯一的一个bean对象类型和要注入的变量类型匹配，就可以注入成功
+ *              出现位置：
+ *                  可以是变量，方法
+ *              细节：在用注解时，set方法不是必须的
+ *           Qualifier:
+ *              作用：在按类中注入的基础上再按名称注入。它在给类成员注入时不能单独使用。但是给方法参数注入时可以
+ *              属性：
+ *                  value：用于指定注入bean的id
+ *           Resource
+ *              作用：直接安装bean的id注入。
+ *              属性：
+ *                  name：用于指定注入bean的id
+ *           以上注解只能注入其他bean类型的数据，而基本类型和string类型无法使用上述注解实现。
+ *           另外，集合类型注入只能通过xml来实现
+ *
+ *           Value注解：
+ *              作用：用于注入基本类型和String类型的数据
+ *              属性：
+ *                  value：指定值。还可以使用spring中的spEL（Spring的el表达式）
+ *                          SpEL的写法：${表达式}
+ *  用于改变作用范围的
+ *      <scope>
+ *      scope：
+ *          作用：指定范围
+ *          属性：
+ *              value：指定范围的取值。常用取值：singleton prototype
+ *  用于和生命周期相关（了解）
+ *      PreDestroy  :销毁
+ *      PostConstruct：初始化
+ *      <init-method>   <destroy-method>
+ 
+ 
+	

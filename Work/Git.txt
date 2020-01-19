@@ -1,0 +1,28 @@
+Git：版本控制系统
+
+	集中式控制系统：版本库集中存放在中央服务器(二叉树),必须联网才能工作
+	
+版本库：类似一个目录，目录里的所有文件都被Git管理起来，每个文件的修改、删除、Git都能跟踪。
+	Git管理的文件为{
+				1.工作区
+				2.版本库{
+						1.暂存区stage
+						2.暂存区分支master(仓库)
+				}
+	}
+	创建版本库：
+		创建版本库：git init
+		把文件添加到版本库：git add XXX			(其实只是提交到了暂存区)
+		把文件提交到仓库：git commit -m "对文件的说明"		(一次性把暂存区所有修改提交到暂存区分支(仓库))
+		查看结果：git status
+	版本回退：
+		查看修改内容：git diff XXX
+		查看历史记录：git log(git log --pretty=oneline)(可以看到commid)
+		回退到上一个版本：git reset --hard HEAD^(回退几个就几个^,100以上是~)
+		取消回退：git reset --hard (commid)
+		
+		版本库：.git{
+						1.Git自动创建的第一个版本库master
+						2.指向master的指针HEAD
+		}
+		
